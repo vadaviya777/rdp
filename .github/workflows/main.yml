@@ -1,24 +1,20 @@
-name: MacRDP
+name: macOS
 on: 
   workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
-    name: MacRDP
     runs-on: macos-latest
-    
-    steps:                 
-    - name: Enabling Remote Access
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setting the Environment Up.
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-      run: |
-          curl -s -o start.sh -L "https://raw.githubusercontent.com/JohnnyNetsec/github-vm/main/mac/start.sh"
-          chmod +x start.sh
-          bash start.sh "$NGROK_AUTH_TOKEN"
-          
-    - name: Log In Details To VNC Server
-      run: |
-         chmod +x login.sh
-         bash login.sh
-         
-    - name: MacOS System running...
+      run: source setup.sh "Alone215" "Alone215" "$NGROK_AUTH_TOKEN"
+    - name: ngrok is now listening to VNC connections on...
+      run: curl --silent http://127.0.0.1:4040/api/tunnels | jq '.tunnels[0].public_url'
+    - name: Setup tmate Session
       uses: mxschmitt/action-tmate@v2
